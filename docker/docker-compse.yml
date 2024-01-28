@@ -7,14 +7,12 @@ services:
     image: postgres:16.1
     container_name: db
     restart: always
+    env_file: ../.env
     ports:
       - 1337:5432
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_PASSWORD: 228
-      POSTGRES_USER: user
-      POSTGRES_DB: db
 
 volumes:
   postgres_data:
+

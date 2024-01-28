@@ -35,7 +35,7 @@ func New() (Config, error) {
 	dbHost := os.Getenv("POSTGRES_HOST")
 	dbPort := os.Getenv("POSTGRES_PORT")
 
-    appPort := os.Getenv("APP_PORT")
+	appPort := os.Getenv("APP_PORT")
 
 	dbConfig := DBConfig{
 		Name:     dbName,
@@ -45,13 +45,13 @@ func New() (Config, error) {
 		Port:     dbPort,
 	}
 
-    appConfig := AppConfig{
-        Port: appPort,
-    }
+	appConfig := AppConfig{
+		Port: appPort,
+	}
 
 	cnf := Config{
-		DB: dbConfig,
-        App: appConfig,
+		DB:  dbConfig,
+		App: appConfig,
 	}
 
 	return cnf, nil
