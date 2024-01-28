@@ -1,5 +1,5 @@
 package app
 
 type App interface {
-    Run()
+    Run() error
 }

@@ -5,36 +5,36 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/KadyrPoyraz/httplayout/config"
 	helloworldhandler "github.com/KadyrPoyraz/httplayout/internal/handler/http/helloworld"
-	helloworldService "github.com/KadyrPoyraz/httplayout/internal/service/helloworld"
 	"github.com/KadyrPoyraz/httplayout/internal/repository/db"
 	"github.com/KadyrPoyraz/httplayout/internal/repository/helloworld"
+	helloworldService "github.com/KadyrPoyraz/httplayout/internal/service/helloworld"
 	"github.com/gorilla/mux"
 )
 
-type app struct{}
-
-func New() App {
-	return &app{}
+type app struct{
+    cnf config.Config
 }
 
-func (*app) Run() {
+func New(cnf config.Config) App {
+	return &app{
+        cnf: cnf,
+    }
+}
+
+func (a *app) Run() error {
     mainRouter := mux.NewRouter().PathPrefix("/api").Subrouter()
 
     h := helloworldhandler.New()
     h.Fill(mainRouter)
 
-    POSTGRES_USER := "user"
-    POSTGRES_PASSWORD := "228"
-    POSTGRES_HOST := "127.0.0.1"
-    POSTGRES_PORT := "1337"
-    POSTGRES_DB := "db"
-
-    dsn := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s?sslmode=disable", POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_HOST, POSTGRES_PORT, POSTGRES_DB)
+    dsnFormat := "postgresql://%s:%s@%s:%s/%s?sslmode=disable"
+    dbCnf := a.cnf.DB
+    dsn := fmt.Sprintf(dsnFormat, dbCnf.User, dbCnf.Password, dbCnf.Host, dbCnf.Port, dbCnf.Name)
     db, err := db.NewPostgresqlDB(dsn)
     if err != nil {
-        fmt.Println(err)
-        return
+        return err
     }
     helloRepo := helloworld.NewPostgresqlRepo(db)
 
@@ -48,8 +48,10 @@ func (*app) Run() {
 
     fmt.Println(users)
 
-    port := ":42069"
+    port := ":" + a.cnf.App.Port
     fmt.Printf("Server started on localhost%s\n", port)
-    http.ListenAndServe(":42069", mainRouter)
+    http.ListenAndServe(port, mainRouter)
+
+    return nil
 }
 
