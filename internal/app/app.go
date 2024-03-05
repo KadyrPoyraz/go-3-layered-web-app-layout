@@ -50,7 +50,10 @@ func (a *app) Run() error {
 
     port := ":" + a.cnf.App.Port
     fmt.Printf("Server started on localhost%s\n", port)
-    http.ListenAndServe(port, mainRouter)
+    err = http.ListenAndServe(port, mainRouter)
+    if err != nil {
+        panic(err)
+    }
 
     return nil
 }
